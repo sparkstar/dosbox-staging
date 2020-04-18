@@ -350,10 +350,10 @@ static void gen_mov_dword_to_reg_imm(HostReg dest_reg,Bit32u imm) {
 				cache_addw( ADD_LO_PC_IMM(dest_reg, (diff - 2) >> 2) );      // add dest_reg, pc, #((diff - 2) >> 2)
 			}
 		} else {
-			Bit8u *datapos;
+			uint8_t *datapos;
 
 			datapos = cache_reservedata();
-			*(Bit32u*)datapos=imm;
+			write_uint32(datapos, imm);
 
 			if (((Bit32u)cache.pos & 0x03) == 0) {
 				cache_addw( LDR_PC_IMM(dest_reg, datapos - (cache.pos + 4)) );      // ldr dest_reg, [pc, datapos]
