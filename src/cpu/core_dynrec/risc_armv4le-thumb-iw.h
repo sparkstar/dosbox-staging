@@ -822,11 +822,12 @@ static INLINE void gen_lea(HostReg dest_reg,Bitu scale,Bits imm) {
 }
 
 // helper function for gen_call_function_raw and gen_call_function_setup
-static void gen_call_function_helper(void * func) {
+static void gen_call_function_helper(void *func)
+{
 	Bit8u *datapos;
 
 	datapos = cache_reservedata();
-	*(Bit32u*)datapos=(Bit32u)func;
+	write_uint32(datapos, reinterpret_cast<uint32_t>(func));
 
 	if (((Bit32u)cache.pos & 0x03) == 0) {
 		cache_addw( LDR_PC_IMM(templo1, datapos - (cache.pos + 4)) );      // ldr templo1, [pc, datapos]
