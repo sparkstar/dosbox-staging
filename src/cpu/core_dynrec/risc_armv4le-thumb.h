@@ -879,13 +879,24 @@ static void gen_run_code(void) {
 		cache.pos = cache.pos + (32 - (((Bitu)cache.pos) & 0x1f));
 	}
 
-	*(Bit32u*)pos1 = ARM_LDR_IMM(FC_SEGS_ADDR, HOST_pc, cache.pos - (pos1 + 8));      // ldr FC_SEGS_ADDR, [pc, #(&Segs)]
+	write_uint32(pos1, ARM_LDR_IMM(FC_SEGS_ADDR, HOST_pc,
+	                               cache.pos - (pos1 + 8))); // ldr
+	                                                         // FC_SEGS_ADDR,
+	                                                         // [pc, #(&Segs)]
 	cache_addd((Bit32u)&Segs);      // address of "Segs"
 
-	*(Bit32u*)pos2 = ARM_LDR_IMM(FC_REGS_ADDR, HOST_pc, cache.pos - (pos2 + 8));      // ldr FC_REGS_ADDR, [pc, #(&cpu_regs)]
+	write_uint32(pos2, ARM_LDR_IMM(FC_REGS_ADDR, HOST_pc,
+	                               cache.pos - (pos2 + 8))); // ldr
+	                                                         // FC_REGS_ADDR,
+	                                                         // [pc,
+	                                                         // #(&cpu_regs)]
 	cache_addd((Bit32u)&cpu_regs);  // address of "cpu_regs"
 
-	*(Bit32u*)pos3 = ARM_LDR_IMM(readdata_addr, HOST_pc, cache.pos - (pos3 + 8));      // ldr readdata_addr, [pc, #(&core_dynrec.readdata)]
+	write_uint32(pos3, ARM_LDR_IMM(readdata_addr, HOST_pc,
+	                               cache.pos - (pos3 + 8))); // ldr
+	                                                         // readdata_addr,
+	                                                         // [pc,
+	                                                         // #(&core_dynrec.readdata)]
 	cache_addd((Bit32u)&core_dynrec.readdata);  // address of "core_dynrec.readdata"
 
 	// align cache.pos to 32 bytes
