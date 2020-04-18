@@ -137,7 +137,7 @@ public:
 		addr&=4095;
 		if (host_readw(hostmem+addr)==(Bit16u)val) return;
 		host_writew(hostmem+addr,val);
-		const uint16_t is_mapped = host_readw(write_map + addr);
+		const uint16_t is_mapped = read_uint16(write_map + addr);
 		if (!is_mapped) {
 			if (active_blocks)
 				return;
@@ -162,7 +162,7 @@ public:
 		addr&=4095;
 		if (host_readd(hostmem+addr)==(Bit32u)val) return;
 		host_writed(hostmem+addr,val);
-		const uint32_t is_mapped = host_readd(write_map + addr);
+		const uint32_t is_mapped = read_uint32(write_map + addr);
 		if (!is_mapped) {
 			if (active_blocks)
 				return;
@@ -216,7 +216,7 @@ public:
 		addr&=4095;
 		if (host_readw(hostmem+addr)==(Bit16u)val) return false;
 
-		const uint16_t is_mapped = host_readw(write_map + addr);
+		const uint16_t is_mapped = read_uint16(write_map + addr);
 		if (!is_mapped) {
 			if (!active_blocks) {
 				active_count--;
@@ -247,7 +247,7 @@ public:
 		addr&=4095;
 		if (host_readd(hostmem+addr)==(Bit32u)val) return false;
 
-		const uint32_t is_mapped = host_readd(write_map + addr);
+		const uint32_t is_mapped = read_uint32(write_map + addr);
 		if (!is_mapped) {
 			if (!active_blocks) {
 				active_count--;
