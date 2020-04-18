@@ -1152,7 +1152,7 @@ static Bit8u * gen_create_branch_long(BranchTypes type) {
 
 static void gen_fill_branch_long(uint8_t *data, uint8_t *from = cache.pos)
 {
-	host_writed(data, from - data - sizeof(uint32_t));
+	write_uint32(data, from - data - sizeof(uint32_t));
 }
 
 static uint8_t *gen_create_jump(uint8_t *to = 0)
