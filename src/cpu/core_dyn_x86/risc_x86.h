@@ -995,7 +995,7 @@ static Bit8u * gen_create_jump(Bit8u * to=0) {
 }
 
 static void gen_fill_jump(uint8_t *data, uint8_t *to = cache.pos) {
-	host_writed(data, to - data - sizeof(uint32_t));
+	write_uint32(data, to - data - sizeof(uint32_t));
 }
 
 
