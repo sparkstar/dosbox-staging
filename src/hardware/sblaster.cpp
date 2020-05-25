@@ -235,7 +235,6 @@ static void GenerateDMASound(Bitu size);
 static void DSP_SetSpeaker(bool how) {
 	if (sb.speaker==how) return;
 	sb.speaker=how;
-	if (sb.type==SBT_16) return;
 	sb.chan->Enable(how);
 	if (sb.speaker) {
 		PIC_RemoveEvents(DMA_Silent_Event);
@@ -604,6 +603,22 @@ static void DMA_Silent_Event(Bitu val) {
 }
 
 static void END_DMA_Event(Bitu val) {
+
+	// Eat the first 16 bytes of DMA transfers to the SB16
+	if (sb.type == SBT_16) {
+		static bool is_initialized = false;
+		static uint16_t transfer_tally = 0;
+		if (!is_initialized) {
+			transfer_tally += static_cast<uint16_t>(val);
+			is_initialized = (transfer_tally > 16);
+			if (is_initialized) {
+				LOG_MSG("SB: Enabling speaker-output for the Sound Blaster 16");
+				DSP_SetSpeaker(true);
+			} else {
+				return;
+			}
+		}
+	}
 	GenerateDMASound(val);
 }
 
@@ -790,7 +805,7 @@ static void DSP_Reset(void) {
 	sb.irq.pending_8bit=false;
 	sb.irq.pending_16bit=false;
 	sb.chan->SetFreq(22050);
-//	DSP_SetSpeaker(false);
+	DSP_SetSpeaker(false);
 	PIC_RemoveEvents(END_DMA_Event);
 }
 
@@ -966,7 +981,6 @@ static void DSP_DoCommand(void) {
 	case 0xc8:	case 0xc9:	case 0xca:	case 0xcb:  case 0xcc:	case 0xcd:	case 0xce:	case 0xcf:
 		DSP_SB16_ONLY;
 		/* Generic 8/16 bit DMA */
-//		DSP_SetSpeaker(true);		//SB16 always has speaker enabled
 		sb.dma.sign=(sb.dsp.in.data[0] & 0x10) > 0;
 		DSP_PrepareDMA_New((sb.dsp.cmd & 0x10) ? DSP_DMA_16 : DSP_DMA_8,
 			1+sb.dsp.in.data[1]+(sb.dsp.in.data[2] << 8),
@@ -1700,9 +1714,7 @@ public:
 		// The documentation does not specify if SB gets initialized with the speaker enabled
 		// or disabled. Real SBPro2 has it disabled. 
 		sb.speaker=false;
-		// On SB16 the speaker flag does not affect actual speaker state.
-		if (sb.type == SBT_16) sb.chan->Enable(true);
-		else sb.chan->Enable(false);
+		sb.chan->Enable(false);
 
 		// Create set blaster line
 		ostringstream temp;
